@@ -49,21 +49,25 @@ const productsStore = {
       }
     },
 
-    async fetchProductById({ commit }, id) {
+    async fetchProductById({ commit, dispatch }, id) {
       try {
         const request = await axios.get(`/products/${id}`);
         commit(ADD_PRODUCT, request);
       } catch (err) {
         console.log(err);
+      } finally {
+        dispatch("fetchProducts");
       }
     },
 
-    async removeProduct({ commit }, id) {
+    async removeProduct({ commit, dispatch }, id) {
       try {
         await axios.delete(`/products/${id}`);
         commit(DELETE_PRODUCT, id);
       } catch (err) {
         console.log(err);
+      } finally {
+        dispatch("fetchProducts");
       }
     },
 
@@ -80,12 +84,14 @@ const productsStore = {
       }
     },
 
-    async editProduct({ commit }, id) {
+    async editProduct({ commit, dispatch }, id) {
       try {
         await axios.put(`/products/${id}`, { name: "Edited Product Data" });
         commit(EDIT_PRODUCT, id, "Edited Product Data");
       } catch (err) {
         console.log(err);
+      } finally {
+        dispatch("fetchProducts");
       }
     },
   },

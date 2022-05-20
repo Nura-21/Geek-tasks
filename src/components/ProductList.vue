@@ -46,7 +46,7 @@ export default {
     }
 
     return {
-      products: store.getters.products,
+      products: computed(() => store.getters.products),
       deleteItem,
       generateNewItem,
       editItem,
