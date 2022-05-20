@@ -1,67 +1,56 @@
 <template>
-  <div class="products-list-wrap">
+  <div class="products-list">
     <button @click="generateNewItem">Generate</button>
-    <div class="product-item" v-for="(product, key) in products" :key="key">
-      <img :src="product.avatar" alt="avatar" style="width: 300px" />
-      <h4>{{ product.name }}</h4>
-      <h5>{{ product.description }}</h5>
-      <h5>{{ product.createdAt }}</h5>
-      <button @click="deleteItem(product.id)">Delete</button>
-      <button @click="editItem(product.id)">Edit</button>
+    <div class="products-list-wrap" v-if="isNotEmpty">
+      <div class="product-item" v-for="(product, key) in products" :key="key">
+        <img :src="product.avatar" alt="avatar" style="width: 300px" />
+        <h4>{{ product.name }}</h4>
+        <h4>{{ product.id }}</h4>
+        <h5>{{ product.description }}</h5>
+        <h5>{{ product.createdAt }}</h5>
+        <button @click="deleteItem(product.id)">Delete</button>
+        <button @click="editItem(product.id)">Edit</button>
+      </div>
     </div>
+    <div class="info" v-else>No products</div>
   </div>
 </template>
-
-<!-- * Using store -->
-<!-- <script> 
-import { mapActions, mapGetters } from "vuex";
-
-export default {
-  name: "ProductList",
-  computed: {
-    ...mapGetters(["products"]),
-  },
-  methods: {
-    ...mapActions(["fetchProducts"]),
-  },
-  beforeMount() {
-    this.fetchProducts();
-  },
-};
-</script> -->
-
 <!-- ? Composition -->
 <script>
-import api from "@/services/productsService";
-import { ref } from "vue";
+import { useStore } from "vuex";
+import { computed } from "vue";
 export default {
   setup() {
-    let products = ref([]);
-    api.fetchProducts().then((data) => (products.value = data));
+    const store = useStore();
+
+    store.dispatch("fetchProducts");
 
     function deleteItem(id) {
-      api.deleteProduct(id).then((res) => console.log(res));
+      store.dispatch("removeProduct", id);
     }
 
     function generateNewItem() {
-      api.postProduct({
+      let testObject = {
         createdAt: "2022-05-19T06:02:22.503Z",
         name: "New Generated Product",
         avatar: "http://loremflickr.com/640/480/technics",
         description:
           "The slim & simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
-        id: `${products.value.length + 1}`,
-      });
+        id: `${0}`,
+      };
+      store.dispatch("addProduct", testObject);
     }
 
     function editItem(id) {
-      api.putProduct(id, { name: "Edited Product Data" });
+      store.dispatch("editProduct", id);
     }
+
     return {
-      products,
+      products: store.getters.products,
       deleteItem,
       generateNewItem,
       editItem,
+      isNotEmpty: computed(() => Object.values(store.getters.products).length),
     };
   },
 };
