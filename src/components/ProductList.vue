@@ -1,65 +1,142 @@
 <template>
   <div class="products-list">
-    <button @click="generateNewItem">Generate</button>
+    <div class="product-form">
+      <h2>New product form</h2>
+      <input
+        type="text"
+        v-model="itemTitle"
+        class="form-input"
+        placeholder="New title"
+      />
+      <input
+        type="text"
+        v-model="itemAvatar"
+        class="form-input"
+        placeholder="New avatar"
+      />
+      <textarea
+        type="text"
+        v-model="itemDescription"
+        class="form-textarea"
+        placeholder="New description"
+      />
+      <button @click="generateNewItem">Generate</button>
+    </div>
+
     <div class="products-list-wrap" v-if="isNotEmpty">
-      <div class="product-item" v-for="(product, key) in products" :key="key">
-        <img :src="product.avatar" alt="avatar" style="width: 300px" />
-        <h4>{{ product.name }}</h4>
-        <h4>{{ product.id }}</h4>
-        <h5>{{ product.description }}</h5>
-        <h5>{{ product.createdAt }}</h5>
-        <button @click="deleteItem(product.id)">Delete</button>
-        <button @click="editItem(product.id)">Edit</button>
+      <div class="product-list" v-for="product in products" :key="product.id">
+        <!-- Если так он выводит, но в компанент ProductItem эти данные не летят -->
+        {{ product }}
+
+        <ProductItem :product="product" />
       </div>
     </div>
     <div class="info" v-else>No products</div>
   </div>
 </template>
-<!-- ? Composition -->
-<script>
-import { useStore } from "vuex";
-import { computed } from "vue";
+
+<!-- ? Composition <=> Service -->
+<!-- <script>
+import { computed, ref, onBeforeMount } from "vue";
+import ProductItem from "./ProductItem";
+import api from "../services/products.api";
 export default {
+  name: "ProductList",
+  component: {
+    ProductItem,
+  },
+  setup() {
+    let isLoaded = ref(false);
+    let products = ref({ name: "Test" });
+
+    onBeforeMount(async () => {
+      products.value = await api.fetchProducts().then((data) => data);
+    });
+
+    console.log(products.value); // {name: "Test"}
+
+    let itemTitle = ref("New Generated Product");
+    let itemAvatar = ref("http://loremflickr.com/640/480/technics");
+    let itemDescription = ref("The description of the new generated product");
+
+    function generateNewItem() {
+      api.addProduct({
+        createdAt: new Date(),
+        name: itemTitle.value,
+        avatar: itemAvatar.value,
+        description: itemDescription.value,
+        id: 0,
+      });
+    }
+
+    return {
+      products,
+      isLoaded,
+      itemTitle,
+      itemAvatar,
+      itemDescription,
+      isNotEmpty: computed(() => !!products.value),
+      generateNewItem,
+    };
+  },
+};
+</script> -->
+
+<!-- ? Composition + Store -->
+<!-- <script>
+import { useStore } from "vuex";
+import { computed, ref } from "vue";
+import ProductItem from "./ProductItem";
+export default {
+  components: {
+    ProductItem,
+  },
   setup() {
     const store = useStore();
 
+    let itemTitle = ref("New Generated Product");
+    let itemAvatar = ref("http://loremflickr.com/640/480/technics");
+    let itemDescription = ref("The description of the new generated product");
+
     store.dispatch("fetchProducts");
 
-    function deleteItem(id) {
-      store.dispatch("removeProduct", id);
-    }
-
     function generateNewItem() {
-      let testObject = {
-        createdAt: "2022-05-19T06:02:22.503Z",
-        name: "New Generated Product",
-        avatar: "http://loremflickr.com/640/480/technics",
-        description:
-          "The slim & simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
-        id: `${0}`,
-      };
-      store.dispatch("addProduct", testObject);
-    }
-
-    function editItem(id) {
-      store.dispatch("editProduct", id);
+      store.dispatch("addProduct", {
+        createdAt: new Date(),
+        name: itemTitle.value,
+        avatar: itemAvatar.value,
+        description: itemDescription.value,
+        id: 0,
+      });
     }
 
     return {
       products: computed(() => store.getters.products),
-      deleteItem,
+      itemTitle,
+      itemAvatar,
+      itemDescription,
       generateNewItem,
-      editItem,
       isNotEmpty: computed(() => Object.values(store.getters.products).length),
     };
   },
 };
-</script>
+</script> -->
 
 <style scoped>
-.product-item {
-  border: 2px solid black;
-  border-radius: 50px;
-  margin-top: 20px;
+.product-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-input {
+  margin-bottom: 20px;
+  width: 20%;
+}
+
+.form-textarea {
+  margin-bottom: 20px;
+  width: 20%;
+  height: 100px;
 }
 </style>
