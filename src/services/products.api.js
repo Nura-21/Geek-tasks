@@ -4,7 +4,7 @@ class Api {
   async fetchProducts() {
     try {
       const request = await axios.get(`/products`);
-      return Promise.resolve(request);
+      return request;
     } catch (err) {
       // console.log(err);
       return Promise.reject(err);
