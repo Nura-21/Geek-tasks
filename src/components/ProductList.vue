@@ -46,7 +46,6 @@ export default {
     ProductItem,
   },
   setup() {
-    let isLoaded = ref(false);
     let products = ref({ name: "Test" });
 
     onBeforeMount(async () => {
@@ -71,7 +70,6 @@ export default {
 
     return {
       products,
-      isLoaded,
       itemTitle,
       itemAvatar,
       itemDescription,
