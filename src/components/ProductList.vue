@@ -36,7 +36,7 @@
 </template>
 
 <!-- ? Composition <=> Service -->
-<!-- <script>
+<script>
 import { computed, ref, onBeforeMount } from "vue";
 import ProductItem from "./ProductItem";
 import api from "../services/products.api";
@@ -80,7 +80,7 @@ export default {
     };
   },
 };
-</script> -->
+</script>
 
 <!-- ? Composition + Store -->
 <!-- <script>
