@@ -24,7 +24,11 @@
     </div>
     <div class="product-list-wrap" v-if="isNotEmpty && isLoaded">
       <div class="product-list" v-for="product in products" :key="product.id">
-        <product-item :product="product" @edited="loadProducts"></product-item>
+        <product-item
+          :product="product"
+          @edited="editProduct"
+          @deleted="removeProduct"
+        ></product-item>
       </div>
     </div>
     <div v-else>No products</div>
@@ -35,6 +39,7 @@
 import apiProduct from "../services/products.api";
 import { ref, computed } from "vue";
 import { Product } from "../types/product";
+
 export default {
   name: "ProductList",
   setup() {
@@ -46,28 +51,35 @@ export default {
     let itemDescription = ref("The description of the new generated product");
 
     const loadProducts = () => {
-      setTimeout(() => {
-        isLoaded.value = false;
-        apiProduct.getProducts().then((data) => {
-          products.value = data as Product[];
-          if (products.value) {
-            isLoaded.value = true;
-          }
-        });
-      }, 250);
+      isLoaded.value = false;
+      apiProduct.getProducts().then((data) => {
+        products.value = data;
+        if (products.value) {
+          isLoaded.value = true;
+        }
+      });
     };
 
     loadProducts();
 
+    const removeProduct = (id: string) => {
+      apiProduct.deleteProduct(id).then(() => loadProducts());
+    };
+
+    const editProduct = (id: string, editedObject: Partial<Product>) => {
+      apiProduct.updateProduct(id, editedObject).then(() => loadProducts());
+    };
+
     const generateNewItem = () => {
-      apiProduct.addProduct({
-        createdAt: new Date(),
-        name: itemTitle.value,
-        avatar: itemAvatar.value,
-        description: itemDescription.value,
-        id: "0",
-      });
-      loadProducts();
+      apiProduct
+        .addProduct({
+          createdAt: new Date(),
+          name: itemTitle.value,
+          avatar: itemAvatar.value,
+          description: itemDescription.value,
+          id: "0",
+        })
+        .then(() => loadProducts());
     };
 
     return {
@@ -77,6 +89,8 @@ export default {
       itemDescription,
       generateNewItem,
       loadProducts,
+      removeProduct,
+      editProduct,
       isLoaded,
       isNotEmpty: computed(() => Object.values(products.value).length),
     };

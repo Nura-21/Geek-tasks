@@ -7,7 +7,7 @@
         <h4>{{ product.id }}</h4>
         <h5>{{ product.description }}</h5>
         <h5>{{ product.createdAt }}</h5>
-        <button @click="deleteItem(+product.id)">Delete</button>
+        <button @click="deleteItem(product.id)">Delete</button>
         <button @click="handleEdit(product.id)">Edit</button>
       </div>
       <div :id="product.id" class="hide">
@@ -23,7 +23,6 @@
 <script lang="ts">
 import { Product } from "../types/product";
 import { PropType, defineComponent, ref } from "vue";
-import apiProduct from "../services/products.api";
 
 export default defineComponent({
   name: "ProductItem",
@@ -34,19 +33,18 @@ export default defineComponent({
     },
   },
 
-  emits: ["edited"],
+  emits: ["deleted", "edited"],
 
   setup(props, { emit }) {
     let itemTitle = ref(props.product.name);
     let itemAvatar = ref(props.product.avatar);
     let itemDescription = ref(props.product.description);
 
-    const deleteItem = (id: number) => {
-      apiProduct.deleteProduct(id);
-      emit("edited");
+    const deleteItem = (id: string) => {
+      emit("deleted", id);
     };
 
-    const handleEdit = (id = "0") => {
+    const handleEdit = (id: string) => {
       const form = document.getElementById(id);
       if (form) {
         form.classList.remove("hide");
@@ -75,9 +73,7 @@ export default defineComponent({
         form.classList.add("hide");
       }
 
-      // store.dispatch("editProduct", { editedObject, id });
-      apiProduct.updateProduct(+id, editedObject);
-      emit("edited");
+      emit("edited", id, editedObject);
     };
 
     return {
