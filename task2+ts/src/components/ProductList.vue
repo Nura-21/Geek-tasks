@@ -33,6 +33,7 @@
 <script lang="ts">
 import apiProduct from "../services/products.api";
 import { ref, computed } from "vue";
+import { Product } from "../types/product";
 export default {
   name: "ProductList",
   setup() {
@@ -46,7 +47,7 @@ export default {
     const loadProducts = () => {
       isLoaded.value = false;
       apiProduct.getProducts().then((data) => {
-        products.value = data;
+        products.value = data as Product[];
         isLoaded.value = true;
       });
     };
@@ -59,7 +60,7 @@ export default {
         name: itemTitle.value,
         avatar: itemAvatar.value,
         description: itemDescription.value,
-        id: 0,
+        id: "0",
       });
       loadProducts();
     };

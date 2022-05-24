@@ -46,10 +46,12 @@ export default defineComponent({
       emit("edited");
     };
 
-    const handleEdit = (id: string) => {
+    const handleEdit = (id = "0") => {
       const form = document.getElementById(id);
-      form.classList.remove("hide");
-      form.classList.add("show");
+      if (form) {
+        form.classList.remove("hide");
+        form.classList.add("show");
+      }
     };
 
     const editItem = (id: string) => {
@@ -68,9 +70,10 @@ export default defineComponent({
       if (itemDescription.value != "") {
         Object.assign(editedObject, { description: itemDescription.value });
       }
-
-      form.classList.remove("show");
-      form.classList.add("hide");
+      if (form) {
+        form.classList.remove("show");
+        form.classList.add("hide");
+      }
 
       // store.dispatch("editProduct", { editedObject, id });
       apiProduct.updateProduct(+id, editedObject);
