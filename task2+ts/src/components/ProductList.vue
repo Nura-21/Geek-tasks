@@ -22,7 +22,7 @@
       />
       <button @click="generateNewItem">Generate</button>
     </div>
-    <div class="product-list-wrap" v-if="isNotEmpty && isLoaded">
+    <div class="product-list-wrap" v-if="isNotEmpty">
       <div class="product-list" v-for="product in products" :key="product.id">
         <product-item
           :product="product"
@@ -44,19 +44,14 @@ export default {
   name: "ProductList",
   setup() {
     let products = ref({});
-    let isLoaded = ref(false);
 
     let itemTitle = ref("New Generated Product");
     let itemAvatar = ref("http://loremflickr.com/640/480/technics");
     let itemDescription = ref("The description of the new generated product");
 
     const loadProducts = () => {
-      isLoaded.value = false;
       apiProduct.getProducts().then((data) => {
         products.value = data;
-        if (products.value) {
-          isLoaded.value = true;
-        }
       });
     };
 
@@ -91,7 +86,6 @@ export default {
       loadProducts,
       removeProduct,
       editProduct,
-      isLoaded,
       isNotEmpty: computed(() => Object.values(products.value).length),
     };
   },
