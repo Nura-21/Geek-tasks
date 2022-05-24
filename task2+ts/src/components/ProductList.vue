@@ -46,13 +46,15 @@ export default {
     let itemDescription = ref("The description of the new generated product");
 
     const loadProducts = () => {
-      isLoaded.value = false;
-      apiProduct.getProducts().then((data) => {
-        products.value = data as Product[];
-        if (products.value) {
-          isLoaded.value = true;
-        }
-      });
+      setTimeout(() => {
+        isLoaded.value = false;
+        apiProduct.getProducts().then((data) => {
+          products.value = data as Product[];
+          if (products.value) {
+            isLoaded.value = true;
+          }
+        });
+      }, 1000);
     };
 
     loadProducts();
