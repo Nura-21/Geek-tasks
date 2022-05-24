@@ -54,7 +54,7 @@ export default {
             isLoaded.value = true;
           }
         });
-      }, 1000);
+      }, 250);
     };
 
     loadProducts();
