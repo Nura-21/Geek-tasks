@@ -23,7 +23,7 @@
 <script>
 // import { useStore } from "vuex";
 import { ref } from "vue";
-import api from "../services/products.api";
+import apiProduct from "../services/products.api";
 
 export default {
   name: "ProductItem",
@@ -33,23 +33,20 @@ export default {
       required: true,
     },
   },
+  emits: ["edited"],
 
-  setup() {
+  setup(props, { emit }) {
     // let store = useStore();
 
-    // let itemTitle = ref(props.product.name);
-    // let itemAvatar = ref(props.product.avatar);
-    // let itemDescription = ref(props.product.description);
-    let itemTitle = ref("");
-    let itemAvatar = ref("");
-    let itemDescription = ref("");
-
-    // function deleteItem(id) {
-    //   store.dispatch("removeProduct", id);
-    // }
+    let itemTitle = ref(props.product.name);
+    let itemAvatar = ref(props.product.avatar);
+    let itemDescription = ref(props.product.description);
 
     // const deleteItem = (id) => store.dispatch("removeProduct", id);
-    const deleteItem = (id) => api.deleteItem("removeProduct", id);
+    const deleteItem = (id) => {
+      apiProduct.removeProduct(id);
+      emit("edited");
+    };
 
     const handleEdit = (id) => {
       const form = document.getElementById(id);
@@ -77,7 +74,8 @@ export default {
       form.classList.add("hide");
 
       // store.dispatch("editProduct", { editedObject, id });
-      api.editProduct({ editedObject, id });
+      apiProduct.editProduct({ editedObject, id });
+      emit("edited");
     };
     return {
       deleteItem,

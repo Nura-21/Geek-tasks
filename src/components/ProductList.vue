@@ -27,7 +27,7 @@
       <div class="product-list" v-for="product in products" :key="product.id">
         <!-- Если так он выводит, но в компанент ProductItem эти данные не летят -->
 
-        <product-item :product="product"></product-item>
+        <product-item :product="product" @edited="reLoad"></product-item>
       </div>
     </div>
     <div class="info" v-else>No products</div>
@@ -82,6 +82,7 @@ export default {
       isNotEmpty: computed(() => !!products.value),
       generateNewItem,
       isLoaded,
+      reLoad,
     };
   },
 };

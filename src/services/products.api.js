@@ -16,8 +16,6 @@ class Api {
       await axios.delete(`/products/${id}`);
     } catch (err) {
       console.log(err);
-    } finally {
-      this.fetchProducts();
     }
   }
 
@@ -27,8 +25,6 @@ class Api {
       console.log(response);
     } catch (err) {
       console.log(err);
-    } finally {
-      this.fetchProducts();
     }
   }
 
@@ -37,8 +33,6 @@ class Api {
       await axios.put(`/products/${id}`, editedObject);
     } catch (err) {
       console.log(err);
-    } finally {
-      this.fetchProducts();
     }
   }
 }
