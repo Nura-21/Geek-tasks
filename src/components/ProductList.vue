@@ -23,12 +23,11 @@
       <button @click="generateNewItem">Generate</button>
     </div>
 
-    <div class="products-list-wrap" v-if="isNotEmpty">
+    <div class="products-list-wrap" v-if="isNotEmpty && isLoaded">
       <div class="product-list" v-for="product in products" :key="product.id">
         <!-- Если так он выводит, но в компанент ProductItem эти данные не летят -->
-        {{ product }}
 
-        <ProductItem :product="product" />
+        <product-item :product="product"></product-item>
       </div>
     </div>
     <div class="info" v-else>No products</div>
@@ -37,9 +36,10 @@
 
 <!-- ? Composition <=> Service -->
 <script>
-import { computed, ref, onBeforeMount } from "vue";
+import { computed, ref } from "vue";
 import ProductItem from "./ProductItem";
-import api from "../services/products.api";
+import apiProduct from "../services/products.api";
+
 export default {
   name: "ProductList",
   component: {
@@ -47,27 +47,33 @@ export default {
   },
   setup() {
     let products = ref({ name: "Test" });
+    let isLoaded = ref(false);
 
-    onBeforeMount(async () => {
-      products.value = await api.fetchProducts().then((data) => data);
-    });
+    const reLoad = () => {
+      isLoaded.value = false;
+      apiProduct.fetchProducts().then((data) => {
+        products.value = data;
+        isLoaded.value = true;
+      });
+    };
+
+    reLoad();
 
     console.log(products.value); // {name: "Test"}
-
     let itemTitle = ref("New Generated Product");
     let itemAvatar = ref("http://loremflickr.com/640/480/technics");
     let itemDescription = ref("The description of the new generated product");
 
-    function generateNewItem() {
-      api.addProduct({
+    const generateNewItem = () => {
+      apiProduct.addProduct({
         createdAt: new Date(),
         name: itemTitle.value,
         avatar: itemAvatar.value,
         description: itemDescription.value,
         id: 0,
       });
-    }
-
+      reLoad();
+    };
     return {
       products,
       itemTitle,
@@ -75,6 +81,7 @@ export default {
       itemDescription,
       isNotEmpty: computed(() => !!products.value),
       generateNewItem,
+      isLoaded,
     };
   },
 };

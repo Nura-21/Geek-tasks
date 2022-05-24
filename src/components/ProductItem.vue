@@ -34,12 +34,15 @@ export default {
     },
   },
 
-  setup(props) {
+  setup() {
     // let store = useStore();
 
-    let itemTitle = ref(props.product.name);
-    let itemAvatar = ref(props.product.avatar);
-    let itemDescription = ref(props.product.description);
+    // let itemTitle = ref(props.product.name);
+    // let itemAvatar = ref(props.product.avatar);
+    // let itemDescription = ref(props.product.description);
+    let itemTitle = ref("");
+    let itemAvatar = ref("");
+    let itemDescription = ref("");
 
     // function deleteItem(id) {
     //   store.dispatch("removeProduct", id);
