@@ -27,6 +27,7 @@
         <product-item :product="product" @edited="loadProducts"></product-item>
       </div>
     </div>
+    <div v-else>No products</div>
   </div>
 </template>
 
@@ -48,7 +49,9 @@ export default {
       isLoaded.value = false;
       apiProduct.getProducts().then((data) => {
         products.value = data as Product[];
-        isLoaded.value = true;
+        if (products.value) {
+          isLoaded.value = true;
+        }
       });
     };
 
@@ -73,7 +76,7 @@ export default {
       generateNewItem,
       loadProducts,
       isLoaded,
-      isNotEmpty: computed(() => !!products.value),
+      isNotEmpty: computed(() => Object.values(products.value).length),
     };
   },
 };
