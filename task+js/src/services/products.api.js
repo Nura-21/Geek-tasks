@@ -28,7 +28,7 @@ class Api {
     }
   }
 
-  async editProduct({ editedObject, id }) {
+  async editProduct(id, editedObject) {
     try {
       await axios.put(`/products/${id}`, editedObject);
     } catch (err) {

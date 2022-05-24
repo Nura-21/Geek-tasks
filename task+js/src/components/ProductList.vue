@@ -23,11 +23,13 @@
       <button @click="generateNewItem">Generate</button>
     </div>
 
-    <div class="products-list-wrap" v-if="isNotEmpty && isLoaded">
+    <div class="products-list-wrap" v-if="isNotEmpty">
       <div class="product-list" v-for="product in products" :key="product.id">
-        <!-- Если так он выводит, но в компанент ProductItem эти данные не летят -->
-
-        <product-item :product="product" @edited="reLoad"></product-item>
+        <product-item
+          :product="product"
+          @edited="editProduct"
+          @deleted="removeProduct"
+        ></product-item>
       </div>
     </div>
     <div class="info" v-else>No products</div>
@@ -47,34 +49,38 @@ export default {
   },
   setup() {
     let products = ref({ name: "Test" });
-    let isLoaded = ref(false);
 
     const reLoad = () => {
-      setTimeout(() => {
-        isLoaded.value = false;
-        apiProduct.fetchProducts().then((data) => {
-          products.value = data;
-          isLoaded.value = true;
-        });
-      }, 250);
+      apiProduct.fetchProducts().then((data) => {
+        products.value = data;
+      });
     };
 
     reLoad();
 
-    console.log(products.value); // {name: "Test"}
+    const editProduct = (id, editedObject) => {
+      apiProduct.editProduct(id, editedObject).then(() => reLoad());
+    };
+
+    const removeProduct = (id) => {
+      apiProduct.removeProduct(id).then(() => reLoad());
+    };
+
+    console.log(products.value);
     let itemTitle = ref("New Generated Product");
     let itemAvatar = ref("http://loremflickr.com/640/480/technics");
     let itemDescription = ref("The description of the new generated product");
 
     const generateNewItem = () => {
-      apiProduct.addProduct({
-        createdAt: new Date(),
-        name: itemTitle.value,
-        avatar: itemAvatar.value,
-        description: itemDescription.value,
-        id: 0,
-      });
-      reLoad();
+      apiProduct
+        .addProduct({
+          createdAt: new Date(),
+          name: itemTitle.value,
+          avatar: itemAvatar.value,
+          description: itemDescription.value,
+          id: 0,
+        })
+        .then(() => reLoad());
     };
     return {
       products,
@@ -83,7 +89,8 @@ export default {
       itemDescription,
       isNotEmpty: computed(() => !!products.value),
       generateNewItem,
-      isLoaded,
+      editProduct,
+      removeProduct,
       reLoad,
     };
   },
