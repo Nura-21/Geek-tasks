@@ -50,11 +50,13 @@ export default {
     let isLoaded = ref(false);
 
     const reLoad = () => {
-      isLoaded.value = false;
-      apiProduct.fetchProducts().then((data) => {
-        products.value = data;
-        isLoaded.value = true;
-      });
+      setTimeout(() => {
+        isLoaded.value = false;
+        apiProduct.fetchProducts().then((data) => {
+          products.value = data;
+          isLoaded.value = true;
+        });
+      }, 250);
     };
 
     reLoad();
